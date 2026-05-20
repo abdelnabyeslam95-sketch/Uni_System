@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/Uni_System/static/css/main.cfd494b5.css",
-    "main.js": "/Uni_System/static/js/main.0e55680a.js",
+    "main.css": "/Uni_System/static/css/main.4f04dd99.css",
+    "main.js": "/Uni_System/static/js/main.6774443c.js",
     "index.html": "/Uni_System/index.html",
-    "main.cfd494b5.css.map": "/Uni_System/static/css/main.cfd494b5.css.map",
-    "main.0e55680a.js.map": "/Uni_System/static/js/main.0e55680a.js.map"
+    "main.4f04dd99.css.map": "/Uni_System/static/css/main.4f04dd99.css.map",
+    "main.6774443c.js.map": "/Uni_System/static/js/main.6774443c.js.map"
   },
   "entrypoints": [
-    "static/css/main.cfd494b5.css",
-    "static/js/main.0e55680a.js"
+    "static/css/main.4f04dd99.css",
+    "static/js/main.6774443c.js"
   ]
 }
