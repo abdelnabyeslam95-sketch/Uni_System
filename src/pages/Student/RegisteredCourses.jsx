@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookOpen, User, Clock, Award, DownloadCloud, CheckCircle, Search, Percent, Layers, ShieldCheck } from 'lucide-react';
+import { BookOpen, User, Clock, Award, DownloadCloud, Search, Percent, Layers, ShieldCheck } from 'lucide-react';
 
 const RegisteredCourses = () => {
   // 1. بيانات المواد المسجلة بتفاصيل أكاديمية أعمق (نظري، عملي، حالة المادة)
@@ -13,9 +13,10 @@ const RegisteredCourses = () => {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  // فلترة المواد بناءً على بحث الطالب
+  // تعديل 2: تحسين الفلترة الذكية لتلافي مشاكل اختلاف الحروف الكبيرة والصغيرة ومسافات البحث
   const filteredCourses = courses.filter(course => 
-    course.name.includes(searchTerm) || course.code.toLowerCase().includes(searchTerm.toLowerCase())
+    course.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    course.code.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   // إحصائيات ديناميكية للوحة العلوية
@@ -25,115 +26,134 @@ const RegisteredCourses = () => {
   // دالة لتحديد الألوان بناءً على نسبة الحضور وحالة المادة
   const getStatusConfig = (attendance, status) => {
     if (status === "إنذار غياب" || attendance < 75) {
-      return { bar: 'bg-rose-500', text: 'text-rose-600', bg: 'bg-rose-50 border-rose-100', dot: 'bg-rose-500' };
+      return { 
+        bar: 'bg-rose-500', 
+        text: 'text-rose-600', 
+        bg: 'bg-rose-50 border-rose-100 text-rose-700', 
+        dot: 'bg-rose-500',
+        border: 'border-t-rose-500'
+      };
     }
     if (attendance >= 90) {
-      return { bar: 'bg-emerald-500', text: 'text-emerald-600', bg: 'bg-emerald-50 border-emerald-100', dot: 'bg-emerald-500' };
+      return { 
+        bar: 'bg-emerald-500', 
+        text: 'text-emerald-600', 
+        bg: 'bg-emerald-50 border-emerald-100 text-emerald-700', 
+        dot: 'bg-emerald-500',
+        border: 'border-t-emerald-500'
+      };
     }
-    return { bar: 'bg-blue-500', text: 'text-blue-600', bg: 'bg-blue-50 border-blue-100', dot: 'bg-blue-500' };
+    return { 
+      bar: 'bg-blue-500', 
+      text: 'text-blue-600', 
+      bg: 'bg-blue-50 border-blue-100 text-blue-700', 
+      dot: 'bg-blue-500',
+      border: 'border-t-blue-500'
+    };
   };
 
   return (
-    <div className="p-6 font-sans space-y-8" dir="rtl">
+    <div className="p-4 sm:p-6 font-sans space-y-6 sm:space-y-8" dir="rtl">
       
       {/* 1. الهيدر العلوي المطور بتدرج ألوان احترافي */}
-      <div className="bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 p-8 rounded-[2.5rem] text-white shadow-xl shadow-blue-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div className="bg-gradient-to-r from-blue-600 via-teal-600 to-emerald-600 p-6 sm:p-8 rounded-[2rem] sm:rounded-[2.5rem] text-white shadow-xl shadow-blue-100 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-black flex items-center gap-3">
-            <BookOpen size={32} /> المقررات الدراسية المسجلة
+          <h1 className="text-xl sm:text-3xl font-black flex items-center gap-2 sm:gap-3">
+            <BookOpen className="w-6 h-6 sm:w-8 sm:h-8 shrink-0" /> المقررات الدراسية المسجلة
           </h1>
-          <p className="text-blue-50/80 font-bold mt-2 text-sm md:text-base">
+          <p className="text-blue-50/80 font-bold mt-1.5 text-xs sm:text-base leading-relaxed">
             إدارة الخطة الدراسية الحالية، متابعة الساعات المعتمدة، ونسب الحضور والغياب لكل مادة.
           </p>
         </div>
-        <div className="bg-white/10 backdrop-blur-md px-5 py-3 rounded-2xl border border-white/20 flex items-center gap-3">
-          <ShieldCheck size={20} className="text-teal-200" />
-          <span className="font-black text-sm">حالة الاعتماد: موثق أكاديميّاً</span>
+        <div className="bg-white/10 backdrop-blur-md px-4 py-2 sm:py-3 rounded-xl sm:rounded-2xl border border-white/20 flex items-center gap-2 shrink-0">
+          <ShieldCheck size={18} className="text-teal-200" />
+          <span className="font-black text-xs sm:text-sm">حالة الاعتماد: موثق أكاديميّاً</span>
         </div>
       </div>
 
       {/* 2. كروت الإحصائيات الذكية (Dashboard Cards) */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* كارد الساعات */}
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-all">
+        <div className="bg-white p-5 sm:p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-blue-200 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400">إجمالي الساعات المسجلة</span>
-            <h3 className="text-3xl font-black text-slate-800 font-serif">{totalHours} <span className="text-xs font-black text-slate-400">ساعة معتمدة</span></h3>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-400 block">إجمالي الساعات المسجلة</span>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-800 font-serif">{totalHours} <span className="text-[10px] sm:text-xs font-black text-slate-400 font-sans">ساعة معتمدة</span></h3>
           </div>
-          <div className="p-4 bg-blue-50 text-blue-600 rounded-2xl"><Clock size={24} /></div>
+          <div className="p-3.5 bg-blue-50 text-blue-600 rounded-xl sm:rounded-2xl shrink-0"><Clock size={22} /></div>
         </div>
 
         {/* كارد عدد المواد */}
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-teal-200 transition-all">
+        <div className="bg-white p-5 sm:p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-teal-200 transition-all duration-300">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400">عدد المقررات الحالية</span>
-            <h3 className="text-3xl font-black text-slate-800 font-serif">{courses.length} <span className="text-xs font-black text-slate-400">مقررات دراسية</span></h3>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-400 block">عدد المقررات الحالية</span>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-800 font-serif">{courses.length} <span className="text-[10px] sm:text-xs font-black text-slate-400 font-sans">مقررات دراسية</span></h3>
           </div>
-          <div className="p-4 bg-teal-50 text-teal-600 rounded-2xl"><Layers size={24} /></div>
+          <div className="p-3.5 bg-teal-50 text-teal-600 rounded-xl sm:rounded-2xl shrink-0"><Layers size={22} /></div>
         </div>
 
         {/* كارد متوسط الحضور */}
-        <div className="bg-white p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-emerald-200 transition-all">
+        <div className="bg-white p-5 sm:p-6 rounded-[2rem] border border-slate-100 shadow-sm flex items-center justify-between group hover:border-emerald-200 transition-all duration-300 sm:col-span-2 lg:col-span-1">
           <div className="space-y-1">
-            <span className="text-xs font-bold text-slate-400">معدل الحضور العام</span>
-            <h3 className="text-3xl font-black text-slate-800 font-serif">{avgAttendance}% <span className="text-xs font-black text-slate-400">نسبة تراكمية</span></h3>
+            <span className="text-[10px] sm:text-xs font-bold text-slate-400 block">معدل الحضور العام</span>
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-800 font-serif">{avgAttendance}% <span className="text-[10px] sm:text-xs font-black text-slate-400 font-sans">نسبة تراكمية</span></h3>
           </div>
-          <div className="p-4 bg-emerald-50 text-emerald-600 rounded-2xl"><Percent size={24} /></div>
+          <div className="p-3.5 bg-emerald-50 text-emerald-600 rounded-xl sm:rounded-2xl shrink-0"><Percent size={22} /></div>
         </div>
       </div>
 
-      {/* 3. شريط البحث المطور */}
-      <div className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3 max-w-md hover:border-blue-300 transition-all">
-        <Search size={18} className="text-slate-400" />
+      {/* 3. شريط البحث المطور - متجاوب التمدد */}
+      <div className="bg-white p-3.5 rounded-xl sm:rounded-2xl border border-slate-100 shadow-sm flex items-center gap-3 w-full max-w-md hover:border-blue-300 transition-all">
+        <Search size={18} className="text-slate-400 shrink-0" />
         <input 
           type="text" 
           placeholder="ابحث باسم المادة أو كود التسجيل..." 
-          className="w-full text-sm font-bold bg-transparent border-none outline-none text-slate-700 placeholder-slate-400"
+          className="w-full text-xs sm:text-sm font-bold bg-transparent border-none outline-none text-slate-700 placeholder-slate-400"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
         />
       </div>
 
       {/* 4. شبكة عرض كروت المواد بتصميم ألترا مودرن */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {filteredCourses.map((course) => {
           const config = getStatusConfig(course.attendance, course.status);
 
           return (
+            /* تعديل 1: تحويل كلاس الحافة العلوية ليكون ديناميكيًا بالكامل بناءً على تقييم حضور المادة */
             <div 
               key={course.id} 
-              className="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm p-6 space-y-6 flex flex-col justify-between hover:shadow-md hover:border-blue-200 transition-all duration-300 group relative overflow-hidden border-t-4 border-t-blue-600"
+              className={`bg-white rounded-[2rem] border border-slate-100 shadow-sm p-5 sm:p-6 space-y-5 flex flex-col justify-between hover:shadow-xl hover:border-slate-200/80 hover:-translate-y-0.5 transition-all duration-300 group relative overflow-hidden border-t-4 ${config.border}`}
             >
               {/* التاجات العلوية وحالة المادة الحالية */}
-              <div className="flex justify-between items-center">
-                <div className="flex gap-1.5">
-                  <span className="text-[10px] font-black px-2.5 py-1 bg-slate-100 text-slate-500 rounded-xl">
+              <div className="flex justify-between items-center gap-2">
+                <div className="flex flex-wrap gap-1.5">
+                  <span className="text-[10px] font-black px-2.5 py-1 bg-slate-50 border border-slate-100 text-slate-500 rounded-xl">
                     {course.code}
                   </span>
                   <span className="text-[10px] font-black px-2.5 py-1 bg-blue-50 text-blue-600 rounded-xl">
                     {course.type}
                   </span>
                 </div>
-                {/* شارة حالة المادة الدقيقة */}
-                <span className={`text-[10px] font-black px-2.5 py-1 rounded-xl border flex items-center gap-1.5 ${config.bg}`}>
+                {/* شارة حالة المادة الدقيقة الملونة */}
+                <span className={`text-[10px] font-black px-2.5 py-1 rounded-xl border flex items-center gap-1.5 shrink-0 ${config.bg}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${config.dot}`}></span>
                   {course.status}
                 </span>
               </div>
 
               {/* تفاصيل اسم المادة والمحاضر */}
-              <div className="space-y-2">
-                <h3 className="font-black text-slate-800 text-xl group-hover:text-blue-600 transition-colors">
+              <div className="space-y-1.5">
+                <h3 className="font-black text-slate-800 text-base sm:text-lg group-hover:text-blue-600 transition-colors line-clamp-1">
                   {course.name}
                 </h3>
-                <div className="flex items-center gap-2 text-xs font-bold text-slate-400">
+                <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
                   <User size={14} className="text-slate-300 shrink-0" />
                   <span className="truncate">{course.instructor}</span>
                 </div>
               </div>
 
               {/* الحضور والساعات بتوزيع احترافي ومقروء */}
-              <div className="space-y-4 pt-4 border-t border-slate-50 flex-1 flex flex-col justify-end">
+              <div className="space-y-4 pt-3 border-t border-slate-100/70 flex-1 flex flex-col justify-end">
                 <div className="flex justify-between items-center text-xs font-bold text-slate-500">
                   <span className="flex items-center gap-1.5"><Clock size={14} className="text-slate-400" /> الوزن الأكاديمي</span>
                   <span className="text-slate-700 font-black bg-slate-50 px-2.5 py-1 rounded-lg border border-slate-100">{course.creditHours} ساعات معتمدة</span>
@@ -152,9 +172,9 @@ const RegisteredCourses = () => {
               </div>
 
               {/* زر التحميل التفاعلي الخفيف والسلس */}
-              <button className="w-full py-3.5 bg-slate-50 hover:bg-blue-50 group-hover:text-blue-600 rounded-2xl font-black text-xs text-slate-500 flex items-center justify-center gap-2 border border-slate-100 transition active:scale-[0.98] mt-2">
-                <DownloadCloud size={15} />
-                تحميل الدليل والمحتوى العلمي (Syllabus)
+              <button className="w-full py-3 bg-slate-50 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-xl sm:rounded-2xl font-black text-xs flex items-center justify-center gap-2 border border-slate-100 transition active:scale-[0.98] mt-2">
+                <DownloadCloud size={15} className="shrink-0" />
+                تحميل الدليل العلمي (Syllabus)
               </button>
             </div>
           );

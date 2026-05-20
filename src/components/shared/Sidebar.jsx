@@ -3,13 +3,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, Users, GraduationCap, BookOpen, 
   ClipboardCheck, Calendar, Wallet, ShieldCheck, 
-  Settings, FileText, Monitor, UserCheck, BarChart3 
-} from 'lucide-react';
+  Settings, FileText, Monitor, UserCheck, BarChart3, X 
+} from 'lucide-react'; // استيراد أيقونة الإغلاق X
 
-const Sidebar = ({ role }) => {
+// أضفنا isOpen و onClose للتحكم في الحالة من الأب
+const Sidebar = ({ role, isOpen, onClose }) => {
   const location = useLocation();
 
-  // تعريف جميع القوائم لكل الرتب بناءً على التصميم القوي
+  // تعريف جميع القوائم لكل الرتب (كما هي بدون أي تعديل في الداتا)
   const menuConfig = {
     admin: [
       { type: 'header', title: 'إدارة المنظومة' },
@@ -19,10 +20,10 @@ const Sidebar = ({ role }) => {
       { title: "أعضاء هيئة التدريس", path: "/admin/staff", icon: <UserCheck size={20} /> },
       { title: "شؤون الطلاب", path: "/admin/students", icon: <Users size={20} /> },
       { type: 'header', title: 'التشغيل والمالية' },
-  { title: "الجداول الدراسية", path: "/admin/schedules", icon: <Calendar size={20} /> },
-  { title: "الخزينة والمالية", path: "/admin/finance", icon: <Wallet size={20} /> },
-  { type: 'header', title: 'التقارير والذكاء الاصطناعي' },
-  { title: "التقارير", path: "/admin/reports", icon: <FileText size={20} /> },
+      { title: "الجداول الدراسية", path: "/admin/schedules", icon: <Calendar size={20} /> },
+      { title: "الخزينة والمالية", path: "/admin/finance", icon: <Wallet size={20} /> },
+      { type: 'header', title: 'التقارير والذكاء الاصطناعي' },
+      { title: "التقارير", path: "/admin/reports", icon: <FileText size={20} /> },
       { type: 'header', title: 'الإعدادات' },
       { title: "إعدادات النظام", path: "/admin/settings", icon: <Settings size={20} /> },
     ],
@@ -58,54 +59,78 @@ const Sidebar = ({ role }) => {
   const currentMenu = menuConfig[role] || [];
 
   return (
-    <div className="w-72 bg-white h-screen border-l border-slate-100 flex flex-col shadow-xl z-20" dir="rtl">
-      {/* Logo Section */}
-      <div className="p-8 mb-4">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
-            <ShieldCheck size={24} />
+    <>
+      {/* 1. الطبقة المظلمة الخلفية (Overlay) تظهر فقط في الموبايل عندما يكون السايد بار مفتوحاً لكي تغطي بقية الشاشة */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-40 md:hidden transition-opacity duration-300"
+          onClick={onClose}
+        />
+      )}
+
+      {/* 2. القائمة الجانبية مع التجاوب السحري */}
+      <div 
+        className={`fixed md:sticky right-0 top-0 h-screen w-72 bg-white border-l border-slate-100 flex flex-col shadow-xl z-50 transition-transform duration-300 ease-in-out
+          ${isOpen ? "translate-x-0" : "translate-x-full md:translate-x-0"}`} 
+        dir="rtl"
+      >
+        {/* Logo Section */}
+        <div className="p-8 mb-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white shadow-lg shadow-blue-200">
+              <ShieldCheck size={24} />
+            </div>
+            <h1 className="text-2xl font-black text-slate-800 tracking-tight">UNI-SYS</h1>
           </div>
-          <h1 className="text-2xl font-black text-slate-800 tracking-tight">UNI-SYS</h1>
-        </div>
-      </div>
 
-      {/* Menu Items */}
-      <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar">
-        {currentMenu.map((item, index) => {
-          if (item.type === 'header') {
+          {/* زرار إغلاق المنيو X: يظهر في الموبايل فقط لمساعدة المستخدم على القفل يدوياً */}
+          <button 
+            onClick={onClose}
+            className="md:hidden text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-50 rounded-xl transition"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        {/* Menu Items */}
+        <nav className="flex-1 px-4 overflow-y-auto custom-scrollbar">
+          {currentMenu.map((item, index) => {
+            if (item.type === 'header') {
+              return (
+                <p key={index} className="text-[11px] font-black text-slate-400 uppercase tracking-widest px-4 mt-6 mb-3">
+                  {item.title}
+                </p>
+              );
+            }
             return (
-              <p key={index} className="text-[11px] font-black text-slate-400 uppercase tracking-widest px-4 mt-8 mb-4">
-                {item.title}
-              </p>
+              <Link
+                key={item.path}
+                to={item.path}
+                onClick={onClose} // يغلق السايد بار تلقائياً في الموبايل عند الضغط على الرابط والتنقل لصفحة أخرى
+                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold mb-1 ${
+                  location.pathname === item.path 
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
+                  : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
+                }`}
+              >
+                <span className={location.pathname === item.path ? "text-white" : "text-slate-400"}>
+                  {item.icon}
+                </span>
+                <span className="text-[14px]">{item.title}</span>
+              </Link>
             );
-          }
-          return (
-            <Link
-              key={item.path}
-              to={item.path}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-300 font-bold mb-1 ${
-                location.pathname === item.path 
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-200" 
-                : "text-slate-500 hover:bg-blue-50 hover:text-blue-600"
-              }`}
-            >
-              <span className={location.pathname === item.path ? "text-white" : "text-slate-400"}>
-                {item.icon}
-              </span>
-              <span className="text-[14px]">{item.title}</span>
-            </Link>
-          );
-        })}
-      </nav>
+          })}
+        </nav>
 
-      {/* Footer Side */}
-      <div className="p-6 border-t border-slate-50">
-        <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
-          <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-          <p className="text-[11px] font-bold text-slate-500 uppercase">مؤمن بالكامل - V 2.0</p>
+        {/* Footer Side */}
+        <div className="p-6 border-t border-slate-50">
+          <div className="bg-slate-50 rounded-2xl p-4 flex items-center gap-3">
+            <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+            <p className="text-[11px] font-bold text-slate-500 uppercase">مؤمن بالكامل - V 2.0</p>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
